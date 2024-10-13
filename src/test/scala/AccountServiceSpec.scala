@@ -3,19 +3,11 @@ import service.{AccountService, ClientService, TransactionService}
 import zio.ZIO
 import zio.test._
 
-/** A test suite for AccountService which allows us to test that the methods
-  * defined in it work as expected.
-  *
-  * Because the methods interact directly with the database and we want to limit
-  * unnecessary queries to our local database, which could result in data
-  * inconsistencies, we are using ZIO Test Containers to create a temporary
-  * database.
-  */
 object AccountServiceSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment, Throwable] = {
     suite("AccountService")(
-      suite("added pleasures exist in db")(
-        test("returns true confirming existence of added pleasure") {
+      suite("added accounts exist in db")(
+        test("returns true confirming existence of added accounts") {
           for {
             clientService <- ZIO.environment[ClientService.Service].map(_.get)
             accService    <- ZIO.environment[AccountService.Service].map(_.get)
@@ -28,7 +20,7 @@ object AccountServiceSpec extends ZIOSpecDefault {
             getAcc <- accService.get(acc.id)
           } yield assertTrue(getAcc.get == acc)
         },
-        test("returns true confirming existence of many added pleasures") {
+        test("returns true confirming existence of many added accounts") {
           for {
             clientService <- ZIO.environment[ClientService.Service].map(_.get)
             accService    <- ZIO.environment[AccountService.Service].map(_.get)
@@ -48,8 +40,8 @@ object AccountServiceSpec extends ZIOSpecDefault {
           } yield assertTrue(accs.contains(acc1) && accs.contains(acc2))
         }
       ),
-      suite("deleted pleasures do not exist in db")(
-        test("returns true confirming non-existence of deleted pleasure") {
+      suite("deleted accounts do not exist in db")(
+        test("returns true confirming non-existence of deleted accounts") {
           for {
             clientService  <- ZIO.environment[ClientService.Service].map(_.get)
             accountService <- ZIO.environment[AccountService.Service].map(_.get)
@@ -64,8 +56,8 @@ object AccountServiceSpec extends ZIOSpecDefault {
           } yield assertTrue(getAcc.isEmpty)
         }
       ),
-      suite("updated pleasures contain accurate information")(
-        test("returns true confirming updated pleasure information") {
+      suite("updated accounts contain accurate information")(
+        test("returns true confirming updated account information") {
           for {
             clientService  <- ZIO.environment[ClientService.Service].map(_.get)
             accountService <- ZIO.environment[AccountService.Service].map(_.get)

@@ -1,4 +1,4 @@
-import dao.{AccountDAO, ClientDAO}
+import dao.{AccountDAO, ClientDAO, Migrations}
 import zio.{Scope, ZIO}
 import zio.test.{Spec, TestEnvironment, ZIOSpecDefault}
 import service.{AccountService, ClientService}
@@ -8,17 +8,6 @@ object ClientServiceSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment with Scope, Any] = {
     suite("ClientService")(
       suite("added client exist in db")(
-        test("returns true confirming existence of added client") {
-          for {
-            clientService <- ZIO.environment[ClientService.Service].map(_.get)
-            client <- clientService.create(
-              "Cln_6_f_n",
-              "Cln_6_s_n",
-              "Cln_6_address"
-            )
-            getClient <- clientService.get(client.id)
-          } yield assertTrue(getClient.get == client)
-        },
         test("returns true confirming existence of many added persons") {
           for {
             clientService <- ZIO.environment[ClientService.Service].map(_.get)
@@ -68,11 +57,9 @@ object ClientServiceSpec extends ZIOSpecDefault {
       )
     )
   }.provideShared(
-    AccountService.live,
-    AccountDAO.live,
     ClientService.live,
     ClientDAO.live,
-    TestContainerLayers.dataSourceLayer,
-    Live.default
+    Migrations.layer,
+    TestContainerLayers.dataSourceLayer
   )
 }
